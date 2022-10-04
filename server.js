@@ -4,6 +4,7 @@
 const express = require("express");
 const app = express();
 const bodyparser = require("body-parser");
+const router = require('./router');
 const {v4:uuidv4} = require("uuid");
 // no need to install it, already included in node
 const path = require("path");
@@ -23,10 +24,15 @@ app.use(session({
 
     resave: false,
     saveUninitialized: true }))
-// home route
+
+app.use('/route',router);
+
+    // home route
 
 app.get("/", (req, res)=>{
     res.render("base", { title : "Home"})
 })
+
+
 
 app.listen(3000)
