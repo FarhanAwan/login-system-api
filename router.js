@@ -30,8 +30,7 @@ router.get('/dashboard', (req, res) => {
 router.get('/logout', (req ,res)=>{
     req.session.destroy(function(err){
         if(err){
-            console.log(err);
-            res.send("Error")
+            res.send("Errors")
         }else{
             res.render('base', { title: "Express", logout : "logout Successfully...!"})
         }
