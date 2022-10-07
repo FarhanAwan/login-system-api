@@ -5,12 +5,46 @@ const express = require("express");
 const app = express();
 const bodyparser = require("body-parser");
 const router = require('./router');
+var vhost = require('vhost');
 const {v4:uuidv4} = require("uuid");
 var cookieParser = require('cookie-parser');
 // no need to install it, already included in node
 const path = require("path");
 const session = require("express-session")
 app.set('view engine', 'ejs');
+
+// Main server app
+
+const main = express();
+
+if (!module.parent) main.use(logger('dev'));
+
+main.get('/', function(req, res){
+  res.send('Hello from main app!');
+});
+
+main.get('/:sub', function(req, res){
+  res.send('requested ' + req.params.sub);
+});
+
+// Redirect app
+
+var redirect = express();
+
+redirect.use(function(req, res){
+  if (!module.parent) console.log(req.vhost);
+  res.redirect('http://example.com:3000/' + req.vhost[0]);
+});
+
+// Vhost app
+
+var app = module.exports = express();
+
+app.use(vhost('*.example.com', redirect)); // Serves all subdomains via Redirect app
+app.use(vhost('example.com', main)); // Serves top level domain via Main server app
+
+
+
 // static is virtual path
 app.use('/static', express.static(path.join(__dirname, 'public')))
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')))
