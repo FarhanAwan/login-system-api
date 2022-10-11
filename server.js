@@ -8,6 +8,8 @@ const router = require('./router');
 var vhost = require('vhost');
 const {v4:uuidv4} = require("uuid");
 var cookieParser = require('cookie-parser');
+var multiparty = require('multiparty');
+var format = require('util').format;
 // no need to install it, already included in node
 const path = require("path");
 const session = require("express-session")
@@ -160,62 +162,62 @@ app.use('/route',router);
 
 // Ad-hoc example resource method
 
-app.resource = function(path, obj) {
-  this.get(path, obj.index);
-  this.get(path + '/:a..:b.:format?', function(req, res){
-    var a = parseInt(req.params.a, 10);
-    var b = parseInt(req.params.b, 10);
-    var format = req.params.format;
-    obj.range(req, res, a, b, format);
-  });
-  this.get(path + '/:id', obj.show);
-  this.delete(path + '/:id', function(req, res){
-    var id = parseInt(req.params.id, 10);
-    obj.destroy(req, res, id);
-  });
-};
+// app.resource = function(path, obj) {
+//   this.get(path, obj.index);
+//   this.get(path + '/:a..:b.:format?', function(req, res){
+//     var a = parseInt(req.params.a, 10);
+//     var b = parseInt(req.params.b, 10);
+//     var format = req.params.format;
+//     obj.range(req, res, a, b, format);
+//   });
+//   this.get(path + '/:id', obj.show);
+//   this.delete(path + '/:id', function(req, res){
+//     var id = parseInt(req.params.id, 10);
+//     obj.destroy(req, res, id);
+//   });
+// };
 
-// Fake records
+// // Fake records
 
-var users = [
-  { name: 'tj' }
-  , { name: 'ciaran' }
-  , { name: 'aaron' }
-  , { name: 'guillermo' }
-  , { name: 'simon' }
-  , { name: 'tobi' }
-];
+// var users = [
+//   { name: 'tj' }
+//   , { name: 'ciaran' }
+//   , { name: 'aaron' }
+//   , { name: 'guillermo' }
+//   , { name: 'simon' }
+//   , { name: 'tobi' }
+// ];
 
 // Fake controller.
 
-var User = {
-  index: function(req, res){
-    res.send(users);
-  },
-  show: function(req, res){
-    res.send(users[req.params.id] || { error: 'Cannot find user' });
-  },
-  destroy: function(req, res, id){
-    var destroyed = id in users;
-    delete users[id];
-    res.send(destroyed ? 'destroyed' : 'Cannot find user');
-  },
-  range: function(req, res, a, b, format){
-    var range = users.slice(a, b + 1);
-    switch (format) {
-      case 'json':
-        res.send(range);
-        break;
-      case 'html':
-      default:
-        var html = '<ul>' + range.map(function(user){
-          return '<li>' + user.name + '</li>';
-        }).join('\n') + '</ul>';
-        res.send(html);
-        break;
-    }
-  }
-};
+// var User = {
+//   index: function(req, res){
+//     res.send(users);
+//   },
+//   show: function(req, res){
+//     res.send(users[req.params.id] || { error: 'Cannot find user' });
+//   },
+//   destroy: function(req, res, id){
+//     var destroyed = id in users;
+//     delete users[id];
+//     res.send(destroyed ? 'destroyed' : 'Cannot find user');
+//   },
+//   range: function(req, res, a, b, format){
+//     var range = users.slice(a, b + 1);
+//     switch (format) {
+//       case 'json':
+//         res.send(range);
+//         break;
+//       case 'html':
+//       default:
+//         var html = '<ul>' + range.map(function(user){
+//           return '<li>' + user.name + '</li>';
+//         }).join('\n') + '</ul>';
+//         res.send(html);
+//         break;
+//     }
+//   }
+// };
 
 // curl http://localhost:3000/users     -- responds with all users
 // curl http://localhost:3000/users/1   -- responds with user 1
@@ -223,19 +225,66 @@ var User = {
 // curl http://localhost:3000/users/1..3 -- responds with several users
 // curl -X DELETE http://localhost:3000/users/1  -- deletes the user
 
-app.resource('/users', User);
+// app.resource('/users', User);
 
+// app.get('/', function(req, res){
+//   res.send([
+//     '<h1>Examples:</h1> <ul>'
+//     , '<li>GET /users</li>'
+//     , '<li>GET /users/1</li>'
+//     , '<li>GET /users/3</li>'
+//     , '<li>GET /users/1..3</li>'
+//     , '<li>GET /users/1..3.json</li>'
+//     , '<li>DELETE /users/4</li>'
+//     , '</ul>'
+//   ].join('\n'));
+// });
+
+// Accepting multipart-encoded forms
 app.get('/', function(req, res){
-  res.send([
-    '<h1>Examples:</h1> <ul>'
-    , '<li>GET /users</li>'
-    , '<li>GET /users/1</li>'
-    , '<li>GET /users/3</li>'
-    , '<li>GET /users/1..3</li>'
-    , '<li>GET /users/1..3.json</li>'
-    , '<li>DELETE /users/4</li>'
-    , '</ul>'
-  ].join('\n'));
+  res.send('<form method="post" enctype="multipart/form-data">'
+    + '<p>Title: <input type="text" name="title" /></p>'
+    + '<p>Image: <input type="file" name="image" /></p>'
+    + '<p><input type="submit" value="Upload" /></p>'
+    + '</form>');
+});
+
+app.post('/', function(req, res, next){
+  // create a form to begin parsing
+  var form = new multiparty.Form();
+  var image;
+  var title;
+
+  form.on('error', next);
+  form.on('close', function(){
+    res.send(format('\nuploaded %s (%d Kb) as %s'
+      , image.filename
+      , image.size / 1024 | 0
+      , title));
+  });
+
+
+ // listen on field event for title
+  form.on('field', function(name, val){
+    if (name !== 'title') return;
+    title = val;
+  });
+
+  // listen on part event for image file
+  form.on('part', function(part){
+    if (!part.filename) return;
+    if (part.name !== 'image') return part.resume();
+    image = {};
+    image.filename = part.filename;
+    image.size = 0;
+    part.on('data', function(buf){
+      image.size += buf.length;
+    });
+  });
+
+
+  // parse the form
+  form.parse(req);
 });
 
 app.listen(3000)
