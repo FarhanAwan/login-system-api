@@ -241,50 +241,88 @@ app.use('/route',router);
 // });
 
 // Accepting multipart-encoded forms
-app.get('/', function(req, res){
-  res.send('<form method="post" enctype="multipart/form-data">'
-    + '<p>Title: <input type="text" name="title" /></p>'
-    + '<p>Image: <input type="file" name="image" /></p>'
-    + '<p><input type="submit" value="Upload" /></p>'
-    + '</form>');
+// app.get('/', function(req, res){
+//   res.send('<form method="post" enctype="multipart/form-data">'
+//     + '<p>Title: <input type="text" name="title" /></p>'
+//     + '<p>Image: <input type="file" name="image" /></p>'
+//     + '<p><input type="submit" value="Upload" /></p>'
+//     + '</form>');
+// });
+
+// app.post('/', function(req, res, next){
+//   // create a form to begin parsing
+//   var form = new multiparty.Form();
+//   var image;
+//   var title;
+
+//   form.on('error', next);
+//   form.on('close', function(){
+//     res.send(format('\nuploaded %s (%d Kb) as %s'
+//       , image.filename
+//       , image.size / 1024 | 0
+//       , title));
+//   });
+
+
+//  // listen on field event for title
+//   form.on('field', function(name, val){
+//     if (name !== 'title') return;
+//     title = val;
+//   });
+
+//   // listen on part event for image file
+//   form.on('part', function(part){
+//     if (!part.filename) return;
+//     if (part.name !== 'image') return part.resume();
+//     image = {};
+//     image.filename = part.filename;
+//     image.size = 0;
+//     part.on('data', function(buf){
+//       image.size += buf.length;
+//     });
+//   });
+
+
+//   // parse the form
+//   form.parse(req);
+// });
+
+var online = require('online');
+
+
+// online
+
+online = online(db);
+
+// activity tracking, in this case using
+// the UA string, you would use req.user.id etc
+
+app.use(function(req, res, next){
+  // fire-and-forget
+  online.add(req.headers['user-agent']);
+  next();
 });
 
-app.post('/', function(req, res, next){
-  // create a form to begin parsing
-  var form = new multiparty.Form();
-  var image;
-  var title;
+/**
+ * List helper.
+ */
 
-  form.on('error', next);
-  form.on('close', function(){
-    res.send(format('\nuploaded %s (%d Kb) as %s'
-      , image.filename
-      , image.size / 1024 | 0
-      , title));
+function list(ids) {
+  return '<ul>' + ids.map(function(id){
+    return '<li>' + id + '</li>';
+  }).join('') + '</ul>';
+}
+
+/**
+ * GET users online.
+ */
+
+app.get('/', function(req, res, next){
+  online.last(5, function(err, ids){
+    if (err) return next(err);
+    res.send('<p>Users online: ' + ids.length + '</p>' + list(ids));
   });
-
-
- // listen on field event for title
-  form.on('field', function(name, val){
-    if (name !== 'title') return;
-    title = val;
-  });
-
-  // listen on part event for image file
-  form.on('part', function(part){
-    if (!part.filename) return;
-    if (part.name !== 'image') return part.resume();
-    image = {};
-    image.filename = part.filename;
-    image.size = 0;
-    part.on('data', function(buf){
-      image.size += buf.length;
-    });
-  });
-
-
-  // parse the form
-  form.parse(req);
 });
+
 
 app.listen(3000)
