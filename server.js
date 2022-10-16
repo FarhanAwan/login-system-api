@@ -227,18 +227,18 @@ var User = {
 
 app.resource('/users', User);
 
-app.get('/', function(req, res){
-  res.send([
-    '<h1>Examples:</h1> <ul>'
-    , '<li>GET /users</li>'
-    , '<li>GET /users/1</li>'
-    , '<li>GET /users/3</li>'
-    , '<li>GET /users/1..3</li>'
-    , '<li>GET /users/1..3.json</li>'
-    , '<li>DELETE /users/4</li>'
-    , '</ul>'
-  ].join('\n'));
-});
+// app.get('/', function(req, res){
+//   res.send([
+//     '<h1>Examples:</h1> <ul>'
+//     , '<li>GET /users</li>'
+//     , '<li>GET /users/1</li>'
+//     , '<li>GET /users/3</li>'
+//     , '<li>GET /users/1..3</li>'
+//     , '<li>GET /users/1..3.json</li>'
+//     , '<li>DELETE /users/4</li>'
+//     , '</ul>'
+//   ].join('\n'));
+// });
 
 // Accepting multipart-encoded forms
 // app.get('/', function(req, res){
