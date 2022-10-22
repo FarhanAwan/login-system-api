@@ -292,16 +292,16 @@
 
 // // online
 
-// online = online(db);
+online = online(db);
 
-// // activity tracking, in this case using
-// // the UA string, you would use req.user.id etc
+// activity tracking, in this case using
+// the UA string, you would use req.user.id etc
 
-// app.use(function(req, res, next){
-//   // fire-and-forget
-//   online.add(req.headers['user-agent']);
-//   next();
-// });
+app.use(function(req, res, next){
+  // fire-and-forget
+  online.add(req.headers['user-agent']);
+  next();
+});
 
 // /**
 //  * List helper.
