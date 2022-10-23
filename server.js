@@ -303,26 +303,26 @@ app.use(function(req, res, next){
   next();
 });
 
-// /**
-//  * List helper.
-//  */
+/**
+ * List helper.
+ */
 
-// function list(ids) {
-//   return '<ul>' + ids.map(function(id){
-//     return '<li>' + id + '</li>';
-//   }).join('') + '</ul>';
-// }
+function list(ids) {
+  return '<ul>' + ids.map(function(id){
+    return '<li>' + id + '</li>';
+  }).join('') + '</ul>';
+}
 
-// /**
-//  * GET users online.
-//  */
+/**
+ * GET users online.
+ */
 
-// app.get('/', function(req, res, next){
-//   online.last(5, function(err, ids){
-//     if (err) return next(err);
-//     res.send('<p>Users online: ' + ids.length + '</p>' + list(ids));
-//   });
-// });
+app.get('/', function(req, res, next){
+  online.last(5, function(err, ids){
+    if (err) return next(err);
+    res.send('<p>Users online: ' + ids.length + '</p>' + list(ids));
+  });
+});
 
 
 // app.listen(3000)
