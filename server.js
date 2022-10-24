@@ -369,7 +369,7 @@ function error(status, msg) {
 // api keys do _not_ serve as authentication, merely to
 // track API usage or help prevent malicious behavior etc.
 
-var apiKeys = ['foo', 'bar', 'baz'];
+// var apiKeys = ['foo', 'bar', 'baz'];
 
 // these two objects will serve as our faux database
 
