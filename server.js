@@ -350,19 +350,19 @@ function error(status, msg) {
 // meaning only paths prefixed with "/api"
 // will cause this middleware to be invoked
 
-app.use('/api', function(req, res, next){
-  var key = req.query['api-key'];
+// app.use('/api', function(req, res, next){
+//   var key = req.query['api-key'];
 
-  // key isn't present
-  if (!key) return next(error(400, 'api key required'));
+//   // key isn't present
+//   if (!key) return next(error(400, 'api key required'));
 
-  // key is invalid
-  if (apiKeys.indexOf(key) === -1) return next(error(401, 'invalid api key'))
+//   // key is invalid
+//   if (apiKeys.indexOf(key) === -1) return next(error(401, 'invalid api key'))
 
-  // all good, store req.key for route access
-  req.key = key;
-  next();
-});
+//   // all good, store req.key for route access
+//   req.key = key;
+//   next();
+// });
 
 // map of valid api keys, typically mapped to
 // account info with some sort of database like redis.
