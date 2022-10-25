@@ -400,18 +400,18 @@ function error(status, msg) {
 // });
 
 // example: http://localhost:3000/api/repos/?api-key=foo
-app.get('/api/repos', function(req, res, next){
-  res.send(repos);
-});
+// app.get('/api/repos', function(req, res, next){
+//   res.send(repos);
+// });
 
-// example: http://localhost:3000/api/user/tobi/repos/?api-key=foo
-app.get('/api/user/:name/repos', function(req, res, next){
-  var name = req.params.name;
-  var user = userRepos[name];
+// // example: http://localhost:3000/api/user/tobi/repos/?api-key=foo
+// app.get('/api/user/:name/repos', function(req, res, next){
+//   var name = req.params.name;
+//   var user = userRepos[name];
 
-  if (user) res.send(user);
-  else next();
-});
+//   if (user) res.send(user);
+//   else next();
+// });
 
 // middleware with an arity of 4 are considered
 // error handling middleware. When you next(err)
