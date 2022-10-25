@@ -307,11 +307,11 @@ app.use(function(req, res, next){
  * List helper.
  */
 
-function list(ids) {
-  return '<ul>' + ids.map(function(id){
-    return '<li>' + id + '</li>';
-  }).join('') + '</ul>';
-}
+// function list(ids) {
+//   return '<ul>' + ids.map(function(id){
+//     return '<li>' + id + '</li>';
+//   }).join('') + '</ul>';
+// }
 
 /**
  * GET users online.
