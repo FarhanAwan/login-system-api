@@ -317,12 +317,12 @@ app.use(function(req, res, next){
  * GET users online.
  */
 
-app.get('/', function(req, res, next){
-  online.last(5, function(err, ids){
-    if (err) return next(err);
-    res.send('<p>Users online: ' + ids.length + '</p>' + list(ids));
-  });
-});
+// app.get('/', function(req, res, next){
+//   online.last(5, function(err, ids){
+//     if (err) return next(err);
+//     res.send('<p>Users online: ' + ids.length + '</p>' + list(ids));
+//   });
+// });
 
 
 // app.listen(3000)
