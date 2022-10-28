@@ -335,11 +335,11 @@ const app = express();
 // can then use the property in our
 // custom error handler (Connect respects this prop as well)
 
-function error(status, msg) {
-  var err = new Error(msg);
-  err.status = status;
-  return err;
-}
+// function error(status, msg) {
+//   var err = new Error(msg);
+//   err.status = status;
+//   return err;
+// }
 
 // if we wanted to supply more than JSON, we could
 // use something similar to the content-negotiation
